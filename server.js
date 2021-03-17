@@ -1,7 +1,9 @@
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+const { request } = require("http");
+const { response } = require("express");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -15,7 +17,6 @@ app.get("/notes", (request,response) => {
     response.sendFile(__dirname + "/Develop/public/notes.html")
 
 })
-
 
 app.post("/note", (request,response) => {
     const {body} = request
@@ -32,14 +33,26 @@ app.post("/note", (request,response) => {
 
 })
 
+app.get("/notes", (request,response) => {
+    response.json(notes[request.params.id])
+})
 
-// dont write below this line of code 
+app.delete("/notes", (request,response) => {
+    notes = notes.filter(
+        notes => {
+            
+            return notes.id != request.params.id
+        }
+
+    )
+})
+
+// Global default that sends user back to index.html, dont write under this!!
 app.get("/*", (request,response) => {
 
     response.sendFile(__dirname + "/Develop/public/index.html")
 
 })
-
 
 app.listen(process.env.PORT || 3000, () => {
 
@@ -48,6 +61,6 @@ app.listen(process.env.PORT || 3000, () => {
 })
 
 
-let rawdata = fs.readFileSync('student.json');
-let student = JSON.parse(rawdata);
-console.log(student);
+// let rawdata = fs.readFileSync('student.json');
+// let student = JSON.parse(rawdata);
+// console.log(student);
