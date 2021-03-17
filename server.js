@@ -26,6 +26,11 @@ app.post("/api/notes", (request,response) => {
 
     fs.writeFileSync('db/db.json', data);
 
+    notes.push(newNote);
+    updateDb();
+    response.send('please work')
+    return console.log("Adding new note:" +newNote.title);
+
     response.json({
         status:200
     })
@@ -40,15 +45,25 @@ app.get("/api/notes", (request,response) => {
     response.json(JSON.parse(notes))
 })
 
-// app.delete("/notes", (request,response) => {
-//     notes = notes.filter(
-//         notes => {
-            
-//             return notes.id != request.params.id
-//         }
 
-//     )
-// })
+function updateDb() {
+    fs.writeFile("db/db.json",JSON.stringify(notes),err => {
+        if(err) throw err;
+        return true;
+    })
+}
+
+
+app.delete("api/notes:id", (request,response) => {
+    notes = notes.filter(
+        note => {
+            
+            return note.id != request.params.id
+        }
+
+    )
+})
+
 
 // Global default that sends user back to index.html, dont write under this!!
 app.get("/*", (request,response) => {
