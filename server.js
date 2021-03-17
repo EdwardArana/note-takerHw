@@ -2,30 +2,29 @@ const express = require("express");
 const path = require("path");
 const fs = require("fs");
 const bodyParser = require('body-parser');
-const { request } = require("http");
-const { response } = require("express");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json())
 
 // Always need this to serve assets, Ex. HTML CSS JS
-app.use("/public",express.static(path.join(__dirname,"Develop/public")));
+app.use(express.static('public'));
+// app.use("/public",express.static(path.join(__dirname,"Develop/public")));
 
 app.get("/notes", (request,response) => {
 
-    response.sendFile(__dirname + "/Develop/public/notes.html")
+    response.sendFile(__dirname + "/public/notes.html")
 
 })
 
-app.post("/note", (request,response) => {
+app.post("/api/notes", (request,response) => {
     const {body} = request
 
     console.log(body);
 
     let data = JSON.stringify(body);
 
-    fs.writeFileSync('db.json', data);
+    fs.writeFileSync('db/db.json', data);
 
     response.json({
         status:200
@@ -33,24 +32,28 @@ app.post("/note", (request,response) => {
 
 })
 
-app.get("/notes", (request,response) => {
-    response.json(notes[request.params.id])
+// read from db json , push body to updated array, 
+
+app.get("/api/notes", (request,response) => {
+    const notes = fs.readFileSync('db/db.json')
+    console.log(JSON.parse(notes));
+    response.json(JSON.parse(notes))
 })
 
-app.delete("/notes", (request,response) => {
-    notes = notes.filter(
-        notes => {
+// app.delete("/notes", (request,response) => {
+//     notes = notes.filter(
+//         notes => {
             
-            return notes.id != request.params.id
-        }
+//             return notes.id != request.params.id
+//         }
 
-    )
-})
+//     )
+// })
 
 // Global default that sends user back to index.html, dont write under this!!
 app.get("/*", (request,response) => {
 
-    response.sendFile(__dirname + "/Develop/public/index.html")
+    response.sendFile(__dirname + "/public/index.html")
 
 })
 
