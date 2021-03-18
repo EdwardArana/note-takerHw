@@ -2,7 +2,7 @@ const express = require("express");
 const path = require("path");
 const fs = require("fs");
 const bodyParser = require('body-parser');
-
+var notes = require("./db/db.json")
 const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json())
@@ -18,24 +18,20 @@ app.get("/notes", (request,response) => {
 })
 
 app.post("/api/notes", (request,response) => {
-    const {body} = request
+    let newNote = request.body
 
-    console.log(body);
+    newNote.id = request.body.title
 
-    let data = JSON.stringify(body);
+    notes.push(newNote)
 
-    fs.writeFileSync('db/db.json', data);
+    console.table(notes)
 
-    notes.push(newNote);
-    updateDb();
-    response.send('please work')
-    return console.log("Adding new note:" +newNote.title);
+    response.json(newNote)
+    
+});
 
-    response.json({
-        status:200
-    })
-
-})
+// need GET api route, save button
+app.get("/api/notes", (request,response) =>  response.json(notes));
 
 // read from db json , push body to updated array, 
 
@@ -46,23 +42,18 @@ app.get("/api/notes", (request,response) => {
 })
 
 
-function updateDb() {
-    fs.writeFile("db/db.json",JSON.stringify(notes),err => {
-        if(err) throw err;
-        return true;
-    })
-}
+app.delete("/api/notes/:id", (request,response) => {
+    const deleteId = request.params.id
 
+    for(let i =0; i < notes.length; i++) {
 
-app.delete("api/notes:id", (request,response) => {
-    notes = notes.filter(
-        note => {
+        if(notes[i].id == deleteId) {
             
-            return note.id != request.params.id
+            notes[i] = ['']
         }
-
-    )
-})
+    }
+    
+});
 
 
 // Global default that sends user back to index.html, dont write under this!!
@@ -77,8 +68,3 @@ app.listen(process.env.PORT || 3000, () => {
     console.log('server listening on PORT 3000');
 
 })
-
-
-// let rawdata = fs.readFileSync('student.json');
-// let student = JSON.parse(rawdata);
-// console.log(student);
