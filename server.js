@@ -36,9 +36,18 @@ app.get("/api/notes", (request,response) =>  response.json(notes));
 // read from db json , push body to updated array, 
 
 app.get("/api/notes", (request,response) => {
-    const notes = fs.readFileSync('db/db.json')
-    console.log(JSON.parse(notes));
-    response.json(JSON.parse(notes))
+
+    let newNote = request.body
+
+    newNote.id = request.body.title
+
+    notes.push(newNote)
+
+    fs.writeFile('db/db.json', JSON.stringify(notes), err => {
+        
+        response.json(newNote)
+    })
+
 })
 
 
@@ -49,10 +58,16 @@ app.delete("/api/notes/:id", (request,response) => {
 
         if(notes[i].id == deleteId) {
             
-            notes[i] = ['']
+            notes.splice(i, 1)
+           
         }
     }
-    
+
+    fs.writeFile('db/db.json', JSON.stringify(notes), err => {
+      
+        response.json(true)
+    })
+
 });
 
 
