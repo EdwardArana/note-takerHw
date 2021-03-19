@@ -45,4 +45,9 @@ The following images show the web application's appearance and functionality:
 
 
 https://edwardarana.github.io/note-takerHw/
+
+
 https://fierce-plains-79924.herokuapp.com/
+
+
+https://github.com/EdwardArana/note-takerHw
